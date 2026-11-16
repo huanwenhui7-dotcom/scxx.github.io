@@ -1,0 +1,1333 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>时差信箱 · Time-Lag Mailbox</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Tailwind Configuration Setup -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'PingFang SC', 'sans-serif'],
+            serif: ['"Noto Serif SC"', 'Georgia', 'serif']
+          },
+          colors: {
+            cream: {
+              50: '#FFF9F5',
+              100: '#FDF6F0',
+              200: '#FDE2DC'
+            },
+            peach: {
+              400: '#F7A072',
+              500: '#F48C7F',
+              600: '#E07668'
+            },
+            cocoa: {
+              700: '#7A6864',
+              800: '#4A3B38',
+              900: '#2E2321'
+            }
+          },
+          boxShadow: {
+            warm: '0 14px 44px -10px rgba(244, 140, 127, 0.22)',
+            'warm-sm': '0 6px 20px -6px rgba(244, 140, 127, 0.18)',
+            'inner-soft': 'inset 0 2px 6px 0 rgba(74, 59, 56, 0.04)'
+          },
+          animation: {
+            'fade-in': 'fadeIn 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+            'slide-up': 'slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+            float: 'float 6s ease-in-out infinite',
+            'pulse-soft': 'pulseSoft 4s ease-in-out infinite'
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': { opacity: '0' },
+              '100%': { opacity: '1' }
+            },
+            slideUp: {
+              '0%': { opacity: '0', transform: 'translateY(16px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' }
+            },
+            float: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-6px)' }
+            },
+            pulseSoft: {
+              '0%, 100%': { opacity: '0.55', transform: 'scale(1)' },
+              '50%': { opacity: '0.85', transform: 'scale(1.04)' }
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Google Fonts: Noto Serif SC & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Noto+Serif+SC:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Babel Standalone for JSX compilation in single-file browser preview -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!-- Import Map for React 19 & Lucide Icons -->
+  <script type="importmap">
+    {
+      "imports": {
+        "react": "https://esm.sh/react@19.0.0",
+        "react-dom/client": "https://esm.sh/react-dom@19.0.0/client",
+        "lucide-react": "https://esm.sh/lucide-react@0.469.0?deps=react@19.0.0"
+      }
+    }
+  </script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'PingFang SC', 'sans-serif'],
+            serif: ['"Noto Serif SC"', 'Georgia', 'serif']
+          },
+          colors: {
+            cream: {
+              50: '#FFF9F5',
+              100: '#FDF6F0',
+              200: '#FDE2DC'
+            },
+            peach: {
+              400: '#F7A072',
+              500: '#F48C7F',
+              600: '#E07668'
+            },
+            cocoa: {
+              700: '#7A6864',
+              800: '#4A3B38',
+              900: '#2E2321'
+            }
+          },
+          boxShadow: {
+            warm: '0 14px 44px -10px rgba(244, 140, 127, 0.22)',
+            'warm-sm': '0 6px 20px -6px rgba(244, 140, 127, 0.18)',
+            'inner-soft': 'inset 0 2px 6px 0 rgba(74, 59, 56, 0.04)'
+          },
+          animation: {
+            'fade-in': 'fadeIn 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+            'slide-up': 'slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+            float: 'float 6s ease-in-out infinite',
+            'pulse-soft': 'pulseSoft 4s ease-in-out infinite'
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': { opacity: '0' },
+              '100%': { opacity: '1' }
+            },
+            slideUp: {
+              '0%': { opacity: '0', transform: 'translateY(16px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' }
+            },
+            float: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-6px)' }
+            },
+            pulseSoft: {
+              '0%, 100%': { opacity: '0.55', transform: 'scale(1)' },
+              '50%': { opacity: '0.85', transform: 'scale(1.04)' }
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    body {
+      background: linear-gradient(155deg, #FFF9F5 0%, #FDF6F0 52%, #FCECE6 100%);
+      color: #4A3B38;
+      min-height: 100vh;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .paper-texture {
+      background-image: radial-gradient(rgba(244, 140, 127, 0.07) 1px, transparent 0);
+      background-size: 24px 24px;
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #FFF9F5;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #FDE2DC;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #F48C7F;
+    }
+  </style>
+</head>
+<body class="paper-texture selection:bg-[#FDE2DC] selection:text-[#4A3B38]">
+  <div id="root"></div>
+
+  <script type="text/babel" data-type="module">
+    import React, { useState, useEffect, useMemo } from 'react';
+    import { createRoot } from 'react-dom/client';
+    import {
+      Mail,
+      Send,
+      Search,
+      HeartHandshake,
+      Sparkles,
+      Lock,
+      CheckCircle2,
+      AlertCircle,
+      Feather,
+      User,
+      Users,
+      ShieldAlert,
+      Stamp,
+      Bookmark,
+      Compass,
+      X,
+      PhoneCall,
+      RotateCcw,
+      KeyRound
+    } from 'lucide-react';
+
+    // =========================================================================
+    // 1. 常量配置与安全词库 (Constants & Safety Rules)
+    // =========================================================================
+
+    const STORAGE_KEYS = {
+      COMPLETED_ORDERS: 'timelag_mailbox_completed_orders_v3',
+      PUBLIC_NOTES: 'timelag_mailbox_public_notes_v3',
+      MY_SAVED_NOTES: 'timelag_mailbox_my_saved_notes_v3',
+      RATE_LIMIT: 'timelag_mailbox_rate_limit_v3'
+    };
+
+    const DEFAULT_COMPLETED_ORDERS = ['P680942792256239451'];
+
+    // 负能量与极端违禁词库（严格拦截自杀、遗书等负面词汇）
+    const SENSITIVE_KEYWORDS = [
+      '自杀',
+      '遗书',
+      '轻生',
+      '割腕',
+      '跳楼',
+      '不想活',
+      '结束生命',
+      '自残',
+      '服毒',
+      '上吊',
+      '去死',
+      '告别世界',
+      '想死'
+    ];
+
+    const INITIAL_PUBLIC_NOTES = [
+      {
+        id: 'note-101',
+        targetType: 'other',
+        recipient: '林深',
+        content: '林深，虽然我们隔着不同的城市与时差，但希望你今晚也能睡个好觉。那些没能说出口的委屈，就交给晚风替你吹散吧，你已经做得很好了。',
+        timestamp: '2026-10-24 23:14',
+        cityTag: '北纬31° · 平行时空',
+        senderLabel: '来自平行时空的匿名寄信人'
+      },
+      {
+        id: 'note-102',
+        targetType: 'other',
+        recipient: '林深',
+        content: '致世界上另一个叫林深的人：如果此刻你正站在人生的十字路口犹豫不决，请相信直觉。慢一点也没关系，花期各有不同，你总会迎来属于自己的盛夏。',
+        timestamp: '2026-11-02 18:42',
+        cityTag: '东经121° · 落日站台',
+        senderLabel: '来自平行时空的匿名寄信人'
+      },
+      {
+        id: 'note-103',
+        targetType: 'self',
+        recipient: '林深',
+        content: '写给一年后的自己：希望那时候的你已经顺利通过了考核，不再因为深夜的焦虑而失眠。不管结果如何，我都为你骄傲。',
+        timestamp: '2026-11-11 01:09',
+        cityTag: '零点邮局 · 匿名投递',
+        senderLabel: '来自平行时空的匿名自己'
+      },
+      {
+        id: 'note-104',
+        targetType: 'other',
+        recipient: '陈默',
+        content: '陈默，别总是把所有心事都一个人扛着呀。沉默不是你的保护色，偶尔示弱也没有关系。希望今天有甜甜的橘子汽水，和一点点意外的好运。',
+        timestamp: '2026-10-29 20:15',
+        cityTag: '南风过境 · 匿名信笺',
+        senderLabel: '来自平行时空的匿名寄信人'
+      },
+      {
+        id: 'note-105',
+        targetType: 'other',
+        recipient: '苏晚',
+        content: '苏晚，愿你所有奔赴都有意义，所有等待都不被辜负。哪怕外面下着雨，你也可以做自己的小太阳。',
+        timestamp: '2026-11-05 09:20',
+        cityTag: '晨光信箱',
+        senderLabel: '来自平行时空的匿名寄信人'
+      }
+    ];
+
+    const HEALING_QUOTES = [
+      '“所有未曾说出口的温柔，都会在另一个平行时空里替你抵达。”',
+      '“你不必总是急着赶路，落日与晚风都会为愿意停下来的人停留。”',
+      '“那些写进信箱的心事已经化作星光，去照亮另一个同名同姓的灵魂。”',
+      '“愿你在往后的每一个晨昏里，都能被世界温柔以待，也被自己深深接纳。”'
+    ];
+
+    // =========================================================================
+    // 2. 工具函数 (Utility Functions)
+    // =========================================================================
+
+    function maskOrderId(orderId) {
+      if (!orderId || orderId.length < 10) return orderId;
+      return `${orderId.slice(0, 5)}****${orderId.slice(-4)}`;
+    }
+
+    function formatNow() {
+      const now = new Date();
+      const pad = (n) => String(n).padStart(2, '0');
+      return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(
+        now.getHours()
+      )}:${pad(now.getMinutes())}`;
+    }
+
+    function checkSensitiveContent(text) {
+      if (!text) return null;
+      const normalized = text.replace(/\s+/g, '');
+      for (const word of SENSITIVE_KEYWORDS) {
+        if (normalized.includes(word)) {
+          return word;
+        }
+      }
+      return null;
+    }
+
+    function validateOrderNumber(rawOrder) {
+      const trimmed = (rawOrder || '').trim().toUpperCase();
+      if (!trimmed) {
+        return { ok: false, error: '请输入小红书订单号' };
+      }
+
+      const xhsOrderRegex = /^P\d{17,19}$/;
+      if (!xhsOrderRegex.test(trimmed)) {
+        return { ok: false, error: '订单号格式不正确', countFail: true };
+      }
+
+      let completedOrders = DEFAULT_COMPLETED_ORDERS;
+      try {
+        const stored = localStorage.getItem(STORAGE_KEYS.COMPLETED_ORDERS);
+        if (stored) {
+          completedOrders = JSON.parse(stored);
+        } else {
+          localStorage.setItem(
+            STORAGE_KEYS.COMPLETED_ORDERS,
+            JSON.stringify(DEFAULT_COMPLETED_ORDERS)
+          );
+        }
+      } catch (err) {
+        console.error(err);
+      }
+
+      if (completedOrders.includes(trimmed)) {
+        return { ok: false, error: '该订单号已使用，请更换新订单号', countFail: true };
+      }
+
+      return { ok: true, normalized: trimmed };
+    }
+
+    function markOrderAsCompleted(orderId) {
+      if (!orderId) return;
+      try {
+        const completedRaw = localStorage.getItem(STORAGE_KEYS.COMPLETED_ORDERS);
+        const completedList = completedRaw
+          ? JSON.parse(completedRaw)
+          : [...DEFAULT_COMPLETED_ORDERS];
+
+        if (!completedList.includes(orderId)) {
+          completedList.push(orderId);
+          localStorage.setItem(
+            STORAGE_KEYS.COMPLETED_ORDERS,
+            JSON.stringify(completedList)
+          );
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    function recordFailedAttempt() {
+      try {
+        const now = Date.now();
+        const oneHour = 60 * 60 * 1000;
+        const raw = localStorage.getItem(STORAGE_KEYS.RATE_LIMIT);
+        let data = raw ? JSON.parse(raw) : { attempts: [], lockUntil: null };
+
+        const recentAttempts = (data.attempts || []).filter((ts) => now - ts < oneHour);
+        recentAttempts.push(now);
+
+        if (recentAttempts.length >= 3) {
+          const newLockUntil = now + oneHour;
+          data = { attempts: recentAttempts, lockUntil: newLockUntil };
+          localStorage.setItem(STORAGE_KEYS.RATE_LIMIT, JSON.stringify(data));
+          return { locked: true, lockUntil: newLockUntil };
+        } else {
+          data = { attempts: recentAttempts, lockUntil: null };
+          localStorage.setItem(STORAGE_KEYS.RATE_LIMIT, JSON.stringify(data));
+          return { locked: false, lockUntil: null };
+        }
+      } catch {
+        return { locked: false, lockUntil: null };
+      }
+    }
+
+    function getActiveRateLock() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEYS.RATE_LIMIT);
+        if (!raw) return null;
+        const data = JSON.parse(raw);
+        if (data.lockUntil && Date.now() < data.lockUntil) {
+          return data.lockUntil;
+        }
+        if (data.lockUntil && Date.now() >= data.lockUntil) {
+          localStorage.removeItem(STORAGE_KEYS.RATE_LIMIT);
+        }
+      } catch {}
+      return null;
+    }
+
+    // =========================================================================
+    // 3. 子组件：心理安全关怀弹窗 (Mental Safety Support Modal)
+    // =========================================================================
+
+    function SafetyCareModal({ isOpen, onClose }) {
+      if (!isOpen) return null;
+
+      return (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#2E2321]/45 backdrop-blur-sm animate-fade-in"
+          role="dialog"
+          aria-modal="true"
+        >
+          <div className="relative w-full max-w-md rounded-3xl bg-[#FFF9F5] border border-[#FDE2DC] p-7 shadow-warm text-[#4A3B38] animate-slide-up">
+            <button
+              onClick={onClose}
+              aria-label="关闭弹窗"
+              className="absolute top-5 right-5 p-2 rounded-full text-[#7A6864] hover:bg-[#FDE2DC]/60 transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
+
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#F48C7F] to-[#F7A072] flex items-center justify-center text-white shadow-warm-sm mb-5">
+              <HeartHandshake className="w-6 h-6" />
+            </div>
+
+            <h3 className="font-serif text-xl font-semibold text-[#4A3B38] mb-2">
+              在这个时空里，有人愿意倾听你
+            </h3>
+            <p className="text-sm text-[#7A6864] leading-relaxed mb-5">
+              信箱检测到你的文字里带有沉重或极端的负面情绪。为了您的心理健康，本站严格禁止输入此类词汇。请不要独自承受，这封纸条不会投递，但我们非常希望你能得到专业的温暖陪伴：
+            </p>
+
+            <div className="space-y-3 rounded-2xl bg-[#FDF6F0] border border-[#FDE2DC] p-4 mb-6">
+              <div className="flex items-start gap-3">
+                <PhoneCall className="w-4 h-4 text-[#F48C7F] shrink-0 mt-1" />
+                <div>
+                  <p className="text-xs font-medium text-[#4A3B38]">
+                    全国 24 小时免费心理援助热线
+                  </p>
+                  <p className="text-base font-semibold text-[#E07668] tracking-wide mt-0.5">
+                    400-161-9995
+                  </p>
+                </div>
+              </div>
+              <div className="h-px bg-[#FDE2DC]" />
+              <div className="flex items-start gap-3">
+                <PhoneCall className="w-4 h-4 text-[#F48C7F] shrink-0 mt-1" />
+                <div>
+                  <p className="text-xs font-medium text-[#4A3B38]">
+                    全国统一心理援助公益热线
+                  </p>
+                  <p className="text-base font-semibold text-[#E07668] tracking-wide mt-0.5">
+                    12356
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <button
+              onClick={onClose}
+              className="w-full py-3.5 px-5 rounded-2xl bg-gradient-to-r from-[#F48C7F] to-[#F7A072] text-white font-medium text-sm shadow-warm-sm hover:opacity-95 transition-opacity"
+            >
+              我知道了，先休息一下
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    // =========================================================================
+    // 4. 子组件：封存信箱确认弹窗 (Confirm Seal Modal)
+    // =========================================================================
+
+    function ConfirmSealModal({ isOpen, onCancel, onConfirm, noteCount }) {
+      if (!isOpen) return null;
+
+      return (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#2E2321]/40 backdrop-blur-sm animate-fade-in"
+          role="dialog"
+          aria-modal="true"
+        >
+          <div className="w-full max-w-sm rounded-3xl bg-[#FFF9F5] border border-[#FDE2DC] p-7 shadow-warm text-[#4A3B38] animate-slide-up">
+            <div className="w-11 h-11 rounded-2xl bg-[#FDE2DC] flex items-center justify-center text-[#E07668] mb-4">
+              <Stamp className="w-5 h-5" />
+            </div>
+
+            <h3 className="font-serif text-lg font-semibold mb-2">
+              确定要封存本次时空信箱吗？
+            </h3>
+            <p className="text-sm text-[#7A6864] leading-relaxed mb-6">
+              封存后将生成专属纪念回执卡片（共记录了 <span className="font-semibold text-[#4A3B38]">{noteCount}</span> 封你的纸条）。随时可以返回主页继续浏览或再次封存。
+            </p>
+
+            <div className="flex gap-3">
+              <button
+                onClick={onCancel}
+                className="flex-1 py-3 px-4 rounded-2xl bg-[#FDF6F0] hover:bg-[#FDE2DC]/60 text-[#7A6864] text-sm font-medium transition-colors"
+              >
+                再逛一会儿
+              </button>
+              <button
+                onClick={onConfirm}
+                className="flex-1 py-3 px-4 rounded-2xl bg-gradient-to-r from-[#F48C7F] to-[#F7A072] text-white text-sm font-medium shadow-warm-sm hover:opacity-95 transition-opacity"
+              >
+                确认封存
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // =========================================================================
+    // 5. 核心主页面：免登录开放式时差信箱 (Main Mailbox Workspace)
+    // =========================================================================
+
+    function MainMailboxWorkspace({ onGoSealedReceipt }) {
+      const [activeTab, setActiveTab] = useState('explore'); // 'explore' | 'mine' | 'write'
+
+      // 全站匿名纸条库（LocalStorage 持久化，永不丢失）
+      const [publicNotes, setPublicNotes] = useState(() => {
+        try {
+          const saved = localStorage.getItem(STORAGE_KEYS.PUBLIC_NOTES);
+          return saved ? JSON.parse(saved) : INITIAL_PUBLIC_NOTES;
+        } catch {
+          return INITIAL_PUBLIC_NOTES;
+        }
+      });
+
+      // 我投递的纸条列表（LocalStorage 持久化，永不丢失）
+      const [mySavedNotes, setMySavedNotes] = useState(() => {
+        try {
+          const saved = localStorage.getItem(STORAGE_KEYS.MY_SAVED_NOTES);
+          return saved ? JSON.parse(saved) : [];
+        } catch {
+          return [];
+        }
+      });
+
+      // 写信区表单状态
+      const [orderInput, setOrderInput] = useState('');
+      const [targetType, setTargetType] = useState('other'); // 'other' | 'self'
+      const [recipientName, setRecipientName] = useState('');
+      const [noteContent, setNoteContent] = useState('');
+      const [formToast, setFormToast] = useState(null);
+      const [isSending, setIsSending] = useState(false);
+      const [lockUntil, setLockUntil] = useState(() => getActiveRateLock());
+      const [remainingText, setRemainingText] = useState('');
+
+      // 搜索状态
+      const [searchQuery, setSearchQuery] = useState('林深');
+      const [searchedName, setSearchedName] = useState('林深');
+
+      // 弹窗状态
+      const [showSafetyModal, setShowSafetyModal] = useState(false);
+      const [showConfirmSeal, setShowConfirmSeal] = useState(false);
+
+      // 实时同步所有纸条到 LocalStorage
+      useEffect(() => {
+        try {
+          localStorage.setItem(STORAGE_KEYS.PUBLIC_NOTES, JSON.stringify(publicNotes));
+        } catch (e) {
+          console.error(e);
+        }
+      }, [publicNotes]);
+
+      useEffect(() => {
+        try {
+          localStorage.setItem(STORAGE_KEYS.MY_SAVED_NOTES, JSON.stringify(mySavedNotes));
+        } catch (e) {
+          console.error(e);
+        }
+      }, [mySavedNotes]);
+
+      // 失败锁定倒计时
+      useEffect(() => {
+        const updateTimer = () => {
+          const activeLock = getActiveRateLock();
+          if (activeLock) {
+            setLockUntil(activeLock);
+            const diffSec = Math.ceil((activeLock - Date.now()) / 1000);
+            const mins = Math.floor(diffSec / 60);
+            const secs = diffSec % 60;
+            setRemainingText(`${mins}分${String(secs).padStart(2, '0')}秒`);
+          } else {
+            setLockUntil(null);
+            setRemainingText('');
+          }
+        };
+
+        updateTimer();
+        const timer = setInterval(updateTimer, 1000);
+        return () => clearInterval(timer);
+      }, []);
+
+      // 提交纸条（必须校验小红书订单号格式及是否已被使用，并严格过滤负能量违禁词）
+      const handleSendNote = (e) => {
+        e.preventDefault();
+        setFormToast(null);
+
+        if (lockUntil && Date.now() < lockUntil) return;
+
+        // 1. 校验订单号
+        const orderCheck = validateOrderNumber(orderInput);
+        if (!orderCheck.ok) {
+          if (orderCheck.countFail) {
+            const res = recordFailedAttempt();
+            if (res.locked) {
+              setLockUntil(res.lockUntil);
+              setFormToast({ type: 'error', text: '操作过于频繁，请 1 小时后再试' });
+              return;
+            }
+          }
+          setFormToast({ type: 'error', text: orderCheck.error });
+          return;
+        }
+
+        const cleanContent = noteContent.trim();
+        const cleanRecipient =
+          targetType === 'self'
+            ? recipientName.trim() || '匿名自己'
+            : recipientName.trim();
+
+        if (targetType === 'other' && !cleanRecipient) {
+          setFormToast({ type: 'error', text: '请填写收信人的名字' });
+          return;
+        }
+
+        if (!cleanContent) {
+          setFormToast({ type: 'error', text: '信笺内容不能为空' });
+          return;
+        }
+
+        if (cleanContent.length < 4) {
+          setFormToast({ type: 'error', text: '请多写几个字，让心意更完整一些' });
+          return;
+        }
+
+        // 2. 严格负能量违禁词检测（禁止自杀、遗书等负面词汇输入）
+        const hitSensitive =
+          checkSensitiveContent(cleanContent) || checkSensitiveContent(cleanRecipient) || checkSensitiveContent(orderInput);
+        if (hitSensitive) {
+          setShowSafetyModal(true);
+          return;
+        }
+
+        setIsSending(true);
+
+        setTimeout(() => {
+          // 订单号标记为已使用（用完即焚）
+          markOrderAsCompleted(orderCheck.normalized);
+          localStorage.removeItem(STORAGE_KEYS.RATE_LIMIT);
+
+          const isSelf = targetType === 'self';
+          const newNote = {
+            id: `note-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
+            targetType,
+            recipient: cleanRecipient,
+            content: cleanContent,
+            timestamp: formatNow(),
+            cityTag: isSelf ? '平行时空 · 匿名投递' : '匿名时空投递',
+            senderLabel: isSelf ? '来自平行时空的匿名自己' : '来自平行时空的匿名寄信人',
+            orderId: orderCheck.normalized
+          };
+
+          // 永久存储：加入我的纸条与全站公共纸条库
+          const updatedMy = [newNote, ...mySavedNotes];
+          const updatedPublic = [newNote, ...publicNotes];
+
+          setMySavedNotes(updatedMy);
+          setPublicNotes(updatedPublic);
+
+          setFormToast({
+            type: 'success',
+            text: '纸条已成功投递至平行时空，订单已核销！'
+          });
+
+          // 清空表单
+          setOrderInput('');
+          setRecipientName('');
+          setNoteContent('');
+          setIsSending(false);
+
+          // 自动跳转到“我的纸条”方便用户查看
+          setTimeout(() => {
+            setActiveTab('mine');
+          }, 800);
+        }, 400);
+      };
+
+      const handleSearchSubmit = (e) => {
+        e.preventDefault();
+        setSearchedName(searchQuery.trim());
+      };
+
+      const matchedNotes = useMemo(() => {
+        if (!searchedName) return [];
+        return publicNotes.filter(
+          (n) => n.recipient.toLowerCase() === searchedName.toLowerCase()
+        );
+      }, [publicNotes, searchedName]);
+
+      const isLocked = Boolean(lockUntil && Date.now() < lockUntil);
+
+      return (
+        <div className="min-h-screen flex flex-col relative pb-16">
+          {/* 顶部柔和暖光背景 */}
+          <div className="pointer-events-none fixed top-0 inset-x-0 h-64 bg-gradient-to-b from-[#FDE2DC]/45 to-transparent -z-10" />
+
+          {/* 顶栏 */}
+          <header className="sticky top-0 z-30 bg-[#FFF9F5]/85 backdrop-blur-md border-b border-[#FDE2DC]/80">
+            <div className="max-w-3xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-2xl bg-gradient-to-br from-[#F48C7F] to-[#F7A072] flex items-center justify-center text-white shadow-warm-sm">
+                  <Mail className="w-4 h-4" />
+                </div>
+                <div>
+                  <h1 className="font-serif text-base sm:text-lg font-semibold text-[#4A3B38] leading-none">
+                    时差信箱
+                  </h1>
+                  <p className="text-[11px] text-[#A3928E] mt-1">
+                    全站匿名 · 永久保存 · 严禁负面词汇
+                  </p>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setShowConfirmSeal(true)}
+                className="px-3.5 sm:px-4 py-2 rounded-2xl bg-[#FDF6F0] hover:bg-[#FDE2DC]/80 text-[#D96B5D] border border-[#F48C7F]/35 text-xs sm:text-sm font-medium transition-all flex items-center gap-1.5 shadow-sm active:scale-[0.98]"
+              >
+                <Stamp className="w-3.5 h-3.5" />
+                <span>封存信箱生成纪念卡</span>
+              </button>
+            </div>
+          </header>
+
+          {/* 主体区 */}
+          <main className="flex-1 max-w-3xl w-full mx-auto px-4 sm:px-6 pt-6 sm:pt-8">
+            {/* 三个核心功能 Tab 切换 */}
+            <nav
+              aria-label="信箱功能切换"
+              className="grid grid-cols-3 gap-1.5 p-1.5 rounded-3xl bg-[#FDF6F0] border border-[#FDE2DC] shadow-inner-soft mb-7"
+            >
+              <button
+                onClick={() => setActiveTab('explore')}
+                className={`py-2.5 px-3 rounded-2xl text-xs sm:text-sm font-medium transition-all flex items-center justify-center gap-1.5 ${
+                  activeTab === 'explore'
+                    ? 'bg-gradient-to-r from-[#F48C7F] to-[#F7A072] text-white shadow-warm-sm'
+                    : 'text-[#7A6864] hover:text-[#4A3B38]'
+                }`}
+              >
+                <Compass className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <span>按名字搜索纸条</span>
+              </button>
+
+              <button
+                onClick={() => setActiveTab('mine')}
+                className={`py-2.5 px-3 rounded-2xl text-xs sm:text-sm font-medium transition-all flex items-center justify-center gap-1.5 ${
+                  activeTab === 'mine'
+                    ? 'bg-gradient-to-r from-[#F48C7F] to-[#F7A072] text-white shadow-warm-sm'
+                    : 'text-[#7A6864] hover:text-[#4A3B38]'
+                }`}
+              >
+                <Bookmark className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <span>我的纸条</span>
+                {mySavedNotes.length > 0 && (
+                  <span
+                    className={`ml-0.5 px-1.5 py-0.2 rounded-full text-[10px] ${
+                      activeTab === 'mine'
+                        ? 'bg-white/25 text-white'
+                        : 'bg-[#FDE2DC] text-[#D96B5D]'
+                    }`}
+                  >
+                    {mySavedNotes.length}
+                  </span>
+                )}
+              </button>
+
+              <button
+                onClick={() => setActiveTab('write')}
+                className={`py-2.5 px-3 rounded-2xl text-xs sm:text-sm font-medium transition-all flex items-center justify-center gap-1.5 ${
+                  activeTab === 'write'
+                    ? 'bg-gradient-to-r from-[#F48C7F] to-[#F7A072] text-white shadow-warm-sm'
+                    : 'text-[#7A6864] hover:text-[#4A3B38]'
+                }`}
+              >
+                <Feather className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <span>写下纸条</span>
+              </button>
+            </nav>
+
+            {/* =============================================================== */}
+            {/* TAB 1: 按名字搜索纸条 (无订单号限制，可无限次免费浏览)            */}
+            {/* =============================================================== */}
+            {activeTab === 'explore' && (
+              <section className="animate-slide-up space-y-6">
+                <div className="bg-white/80 backdrop-blur-xl border border-[#FDE2DC] rounded-3xl p-6 sm:p-7 shadow-warm">
+                  <h2 className="font-serif text-xl font-semibold text-[#4A3B38] mb-1.5">
+                    打捞平行时空的回响
+                  </h2>
+                  <p className="text-xs text-[#7A6864] mb-4">
+                    无需订单号，随时输入你的名字、代号或想念的名字，浏览全站匿名信笺
+                  </p>
+
+                  <form onSubmit={handleSearchSubmit} className="flex gap-2.5">
+                    <div className="relative flex-1">
+                      <Search className="w-4 h-4 text-[#A3928E] absolute left-4 top-1/2 -translate-y-1/2" />
+                      <input
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="输入名字搜索纸条"
+                        className="w-full pl-10 pr-4 py-3 rounded-2xl bg-[#FDF6F0] border border-[#FDE2DC] text-[#4A3B38] placeholder:text-[#A3928E]/70 text-sm focus:outline-none focus:ring-2 focus:ring-[#F48C7F]/40 focus:border-[#F48C7F] transition-all"
+                      />
+                    </div>
+                    <button
+                      type="submit"
+                      className="px-5 sm:px-6 py-3 rounded-2xl bg-gradient-to-r from-[#F48C7F] to-[#F7A072] text-white text-sm font-medium shadow-warm-sm hover:opacity-95 active:scale-[0.99] transition-all shrink-0"
+                    >
+                      搜索纸条
+                    </button>
+                  </form>
+
+                  <div className="mt-4 flex flex-wrap items-center gap-2">
+                    <span className="text-[11px] text-[#A3928E]">热门检索词：</span>
+                    {['林深', '陈默', '苏晚', '匿名自己'].map((preset) => (
+                      <button
+                        key={preset}
+                        type="button"
+                        onClick={() => {
+                          setSearchQuery(preset);
+                          setSearchedName(preset);
+                        }}
+                        className={`px-3 py-1 rounded-full text-xs transition-all ${
+                          searchedName === preset
+                            ? 'bg-[#F48C7F] text-white shadow-sm'
+                            : 'bg-[#FDF6F0] hover:bg-[#FDE2DC]/70 text-[#7A6864] border border-[#FDE2DC]'
+                        }`}
+                      >
+                        {preset}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="px-4 py-3 rounded-2xl bg-[#FDE2DC]/50 border border-[#FDE2DC] flex items-center gap-2.5 text-xs text-[#7A6864]">
+                  <Sparkles className="w-4 h-4 text-[#D96B5D] shrink-0" />
+                  <span>
+                    所有纸条均经过严格安全审核与负面词过滤，全站匿名展示，温暖治愈。
+                  </span>
+                </div>
+
+                {searchedName ? (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between px-1">
+                      <span className="text-xs text-[#7A6864]">
+                        写给 <strong className="text-[#4A3B38]">“{searchedName}”</strong> 的匿名纸条
+                      </span>
+                      <span className="text-xs text-[#A3928E]">
+                        共找到 {matchedNotes.length} 封
+                      </span>
+                    </div>
+
+                    {matchedNotes.length === 0 ? (
+                      <div className="bg-white/75 border border-[#FDE2DC] rounded-3xl p-10 text-center">
+                        <p className="font-serif text-base text-[#4A3B38] mb-1.5">
+                          暂时还没有写给“{searchedName}”的纸条
+                        </p>
+                        <p className="text-xs text-[#A3928E] mb-5">
+                          你可以输入小红书订单号，成为第一个为这个名字留下温暖的人
+                        </p>
+                        <button
+                          onClick={() => {
+                            setTargetType('other');
+                            setRecipientName(searchedName);
+                            setActiveTab('write');
+                          }}
+                          className="px-5 py-2.5 rounded-2xl bg-[#FDF6F0] hover:bg-[#FDE2DC]/80 text-[#D96B5D] border border-[#F48C7F]/35 text-xs font-medium transition-colors"
+                        >
+                          去给“{searchedName}”写一封
+                        </button>
+                      </div>
+                    ) : (
+                      matchedNotes.map((note) => (
+                        <article
+                          key={note.id}
+                          className="bg-white/85 backdrop-blur-md border border-[#FDE2DC] rounded-3xl p-6 shadow-warm-sm hover:shadow-warm transition-all"
+                        >
+                          <div className="flex items-center justify-between gap-2 pb-3 mb-3 border-b border-[#FDE2DC]/60">
+                            <span className="font-serif text-sm font-semibold text-[#D96B5D]">
+                              致：{note.recipient}
+                            </span>
+                            <span className="text-[11px] text-[#A3928E] bg-[#FDF6F0] px-2.5 py-0.5 rounded-full">
+                              {note.cityTag}
+                            </span>
+                          </div>
+
+                          <p className="font-serif text-sm sm:text-base text-[#4A3B38] leading-relaxed whitespace-pre-wrap">
+                            {note.content}
+                          </p>
+
+                          <div className="mt-4 pt-2 flex items-center justify-between text-[11px] text-[#A3928E]">
+                            <span>{note.timestamp}</span>
+                            <span>{note.senderLabel}</span>
+                          </div>
+                        </article>
+                      ))
+                    )}
+                  </div>
+                ) : null}
+              </section>
+            )}
+
+            {/* =============================================================== */}
+            {/* TAB 2: 我的纸条 (永久保存当前浏览器/设备留下的所有纸条)          */}
+            {/* =============================================================== */}
+            {activeTab === 'mine' && (
+              <section className="animate-slide-up space-y-5">
+                <div className="bg-white/80 backdrop-blur-xl border border-[#FDE2DC] rounded-3xl p-6 sm:p-7 shadow-warm">
+                  <div className="flex items-center justify-between mb-2">
+                    <h2 className="font-serif text-xl font-semibold text-[#4A3B38]">
+                      我投递的所有时空纸条
+                    </h2>
+                    <span className="text-xs text-[#A3928E]">
+                      共 {mySavedNotes.length} 封
+                    </span>
+                  </div>
+                  <p className="text-xs text-[#7A6864]">
+                    这里永久保存着您在本设备上写下的所有纸条，永不丢失，均以完全匿名形式呈现
+                  </p>
+                </div>
+
+                {mySavedNotes.length === 0 ? (
+                  <div className="bg-white/75 border border-[#FDE2DC] rounded-3xl p-10 text-center">
+                    <p className="font-serif text-base text-[#4A3B38] mb-1.5">
+                      您还没有留下纸条
+                    </p>
+                    <p className="text-xs text-[#A3928E] mb-5">
+                      输入小红书订单号即可在此写下并永久留存您的第一封匿名纸条
+                    </p>
+                    <button
+                      onClick={() => setActiveTab('write')}
+                      className="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-[#F48C7F] to-[#F7A072] text-white text-xs font-medium shadow-warm-sm hover:opacity-95 transition-opacity"
+                    >
+                      前往写下纸条
+                    </button>
+                  </div>
+                ) : (
+                  mySavedNotes.map((note) => (
+                    <article
+                      key={note.id}
+                      className="bg-white/85 backdrop-blur-md border border-[#FDE2DC] rounded-3xl p-6 shadow-warm-sm"
+                    >
+                      <div className="flex items-center justify-between gap-2 pb-3 mb-3 border-b border-[#FDE2DC]/60">
+                        <span className="font-serif text-sm font-semibold text-[#D96B5D]">
+                          致：{note.recipient}
+                        </span>
+                        <span className="text-[11px] text-[#A3928E] bg-[#FDF6F0] px-2.5 py-0.5 rounded-full">
+                          {note.cityTag}
+                        </span>
+                      </div>
+
+                      <p className="font-serif text-sm sm:text-base text-[#4A3B38] leading-relaxed whitespace-pre-wrap">
+                        {note.content}
+                      </p>
+
+                      <div className="mt-4 pt-2 flex items-center justify-between text-[11px] text-[#A3928E]">
+                        <span>{note.timestamp}</span>
+                        <span>核销订单：{maskOrderId(note.orderId)}</span>
+                      </div>
+                    </article>
+                  ))
+                )}
+              </section>
+            )}
+
+            {/* =============================================================== */}
+            {/* TAB 3: 写下纸条 (集成小红书订单号输入校验与负能量防线)              */}
+            {/* =============================================================== */}
+            {activeTab === 'write' && (
+              <section className="animate-slide-up">
+                <div className="bg-white/80 backdrop-blur-xl border border-[#FDE2DC] rounded-3xl p-6 sm:p-8 shadow-warm">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 mb-6 border-b border-[#FDE2DC]/70">
+                    <div>
+                      <h2 className="font-serif text-xl sm:text-2xl font-semibold text-[#4A3B38]">
+                        写下一封时空纸条
+                      </h2>
+                      <p className="text-xs sm:text-sm text-[#7A6864] mt-1">
+                        需输入有效小红书订单号验证并核销（一单留信一次）
+                      </p>
+                    </div>
+
+                    <div className="inline-flex p-1 rounded-2xl bg-[#FDF6F0] border border-[#FDE2DC] self-start">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setTargetType('other');
+                          setFormToast(null);
+                        }}
+                        className={`px-3.5 py-1.5 rounded-xl text-xs font-medium transition-all flex items-center gap-1.5 ${
+                          targetType === 'other'
+                            ? 'bg-white text-[#D96B5D] shadow-sm'
+                            : 'text-[#7A6864] hover:text-[#4A3B38]'
+                        }`}
+                      >
+                        <Users className="w-3.5 h-3.5" />
+                        <span>写给别人</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setTargetType('self');
+                          setFormToast(null);
+                        }}
+                        className={`px-3.5 py-1.5 rounded-xl text-xs font-medium transition-all flex items-center gap-1.5 ${
+                          targetType === 'self'
+                            ? 'bg-white text-[#D96B5D] shadow-sm'
+                            : 'text-[#7A6864] hover:text-[#4A3B38]'
+                        }`}
+                      >
+                        <User className="w-3.5 h-3.5" />
+                        <span>写给自己</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <form onSubmit={handleSendNote} className="space-y-5">
+                    {/* 小红书订单号输入框 */}
+                    <div>
+                      <label className="block text-xs font-medium text-[#7A6864] mb-2 flex items-center gap-1.5">
+                        <KeyRound className="w-3.5 h-3.5 text-[#F48C7F]" />
+                        <span>小红书订单编号</span>
+                      </label>
+                      <input
+                        type="text"
+                        disabled={isLocked || isSending}
+                        value={orderInput}
+                        onChange={(e) => {
+                          setOrderInput(e.target.value);
+                          if (formToast) setFormToast(null);
+                        }}
+                        placeholder="请输入小红书订单号"
+                        className="w-full px-4 py-3 rounded-2xl bg-[#FDF6F0] border border-[#FDE2DC] text-[#4A3B38] placeholder:text-[#A3928E]/70 text-sm focus:outline-none focus:ring-2 focus:ring-[#F48C7F]/40 focus:border-[#F48C7F] disabled:opacity-60 transition-all shadow-inner-soft"
+                      />
+                    </div>
+
+                    {targetType === 'other' ? (
+                      <div>
+                        <label className="block text-xs font-medium text-[#7A6864] mb-2">
+                          收信人名字
+                        </label>
+                        <input
+                          type="text"
+                          maxLength={20}
+                          value={recipientName}
+                          onChange={(e) => setRecipientName(e.target.value)}
+                          placeholder="输入收信人的名字"
+                          className="w-full px-4 py-3 rounded-2xl bg-[#FDF6F0] border border-[#FDE2DC] text-[#4A3B38] placeholder:text-[#A3928E]/70 text-sm focus:outline-none focus:ring-2 focus:ring-[#F48C7F]/40 focus:border-[#F48C7F] transition-all"
+                        />
+                      </div>
+                    ) : (
+                      <div>
+                        <label className="block text-xs font-medium text-[#7A6864] mb-2">
+                          名字 / 匿名代号（选填，留空默认归入“匿名自己”）
+                        </label>
+                        <input
+                          type="text"
+                          maxLength={20}
+                          value={recipientName}
+                          onChange={(e) => setRecipientName(e.target.value)}
+                          placeholder="输入名字或代号，提交后将以完全匿名形式呈现"
+                          className="w-full px-4 py-3 rounded-2xl bg-[#FDF6F0] border border-[#FDE2DC] text-[#4A3B38] placeholder:text-[#A3928E]/70 text-sm focus:outline-none focus:ring-2 focus:ring-[#F48C7F]/40 focus:border-[#F48C7F] transition-all"
+                        />
+                      </div>
+                    )}
+
+                    <div>
+                      <div className="flex justify-between items-center mb-2">
+                        <label className="text-xs font-medium text-[#7A6864]">
+                          信笺正文（严禁负能量与极端词汇）
+                        </label>
+                        <span className="text-[11px] text-[#A3928E]">
+                          {noteContent.length} / 300
+                        </span>
+                      </div>
+                      <textarea
+                        rows={5}
+                        maxLength={300}
+                        value={noteContent}
+                        onChange={(e) => {
+                          setNoteContent(e.target.value);
+                          if (formToast) setFormToast(null);
+                        }}
+                        placeholder={
+                          targetType === 'self'
+                            ? '写下此刻的心情、对未来的期许，充满阳光与温柔...'
+                            : '把没来得及说出口的祝福、思念或鼓励写在这里吧...'
+                        }
+                        className="w-full p-4 rounded-2xl bg-[#FDF6F0] border border-[#FDE2DC] font-serif text-[#4A3B38] placeholder:font-sans placeholder:text-[#A3928E]/70 text-sm sm:text-base leading-relaxed focus:outline-none focus:ring-2 focus:ring-[#F48C7F]/40 focus:border-[#F48C7F] transition-all resize-none"
+                      />
+                    </div>
+
+                    {isLocked && (
+                      <div className="flex items-center gap-2.5 p-3.5 rounded-2xl bg-[#FDE2DC]/65 border border-[#F48C7F]/30 text-[#C95649] text-xs sm:text-sm">
+                        <Lock className="w-4 h-4 shrink-0" />
+                        <span>操作过于频繁，请 1 小时后再试（剩余 {remainingText}）</span>
+                      </div>
+                    )}
+
+                    {formToast && (
+                      <div
+                        className={`p-3.5 rounded-2xl text-xs sm:text-sm flex items-start gap-2.5 animate-fade-in ${
+                          formToast.type === 'success'
+                            ? 'bg-[#FDF6F0] border border-[#F48C7F]/40 text-[#4A3B38]'
+                            : 'bg-[#FDE2DC]/65 border border-[#F48C7F]/30 text-[#C95649]'
+                        }`}
+                      >
+                        {formToast.type === 'success' ? (
+                          <CheckCircle2 className="w-4 h-4 text-[#F48C7F] shrink-0 mt-0.5" />
+                        ) : (
+                          <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                        )}
+                        <span>{formToast.text}</span>
+                      </div>
+                    )}
+
+                    <div className="pt-1 flex flex-col sm:flex-row items-center justify-between gap-4">
+                      <span className="text-[11px] text-[#A3928E] flex items-center gap-1.5">
+                        <ShieldAlert className="w-3.5 h-3.5 text-[#F48C7F]" />
+                        <span>安全公约：拒绝一切负能量与自残极端词汇</span>
+                      </span>
+
+                      <button
+                        type="submit"
+                        disabled={isLocked || isSending}
+                        className="w-full sm:w-auto px-7 py-3.5 rounded-2xl bg-gradient-to-r from-[#F48C7F] to-[#F7A072] text-white font-medium text-sm shadow-warm-sm hover:shadow-warm hover:opacity-95 active:scale-[0.99] disabled:opacity-50 transition-all flex items-center justify-center gap-2"
+                      >
+                        {isSending ? (
+                          <>
+                            <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                            <span>正在核销并投递...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Send className="w-4 h-4" />
+                            <span>验证并投递纸条</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </section>
+            )}
+          </main>
+
+          <SafetyCareModal
+            isOpen={showSafetyModal}
+            onClose={() => setShowSafetyModal(false)}
+          />
+
+          <ConfirmSealModal
+            isOpen={showConfirmSeal}
+            noteCount={mySavedNotes.length}
+            onCancel={() => setShowConfirmSeal(false)}
+            onConfirm={() => {
+              setShowConfirmSeal(false);
+              onGoSealedReceipt(mySavedNotes);
+            }}
+          />
+        </div>
+      );
+    }
+
+    // =========================================================================
+    // 6. 结业纪念卡视图 (Sealed Receipt View)
+    // =========================================================================
+
+    function SealedReceiptView({ myNotes, onReturnMain }) {
+      const healingQuote = useMemo(() => {
+        const idx = Math.floor(Math.random() * HEALING_QUOTES.length);
+        return HEALING_QUOTES[idx];
+      }, []);
+
+      const latestNote = myNotes && myNotes.length > 0 ? myNotes[0] : null;
+
+      return (
+        <div className="relative min-h-screen flex flex-col items-center justify-center px-4 py-10 overflow-hidden">
+          <div className="pointer-events-none absolute top-[5%] left-[15%] w-[26rem] h-[26rem] rounded-full bg-gradient-to-tr from-[#F48C7F]/20 to-[#F7A072]/15 blur-3xl" />
+          <div className="pointer-events-none absolute bottom-[5%] right-[10%] w-[24rem] h-[24rem] rounded-full bg-[#FDE2DC]/60 blur-3xl" />
+
+          <div className="relative z-10 w-full max-w-md mb-5 animate-fade-in">
+            <div className="px-4 py-3 rounded-2xl bg-gradient-to-r from-[#F48C7F] to-[#F7A072] text-white text-xs sm:text-sm font-medium shadow-warm-sm flex items-center justify-center gap-2 text-center">
+              <Sparkles className="w-4 h-4 shrink-0" />
+              <span>时空纪念卡已生成，请长按或截图保存您的信箱回执</span>
+            </div>
+          </div>
+
+          <main className="relative z-10 w-full max-w-md animate-slide-up">
+            <div className="relative bg-gradient-to-b from-[#FFFDFB] to-[#FDF6F0] border-2 border-[#FDE2DC] rounded-3xl p-7 sm:p-9 shadow-warm overflow-hidden">
+              <div className="absolute -top-4 -right-4 w-28 h-28 rounded-full border-2 border-dashed border-[#F48C7F]/35 flex flex-col items-center justify-center rotate-12 pointer-events-none select-none">
+                <span className="text-[9px] tracking-widest text-[#D96B5D]/70 uppercase">
+                  SEALED · 回执
+                </span>
+                <span className="font-serif text-xs font-semibold text-[#D96B5D]/80 mt-0.5">
+                  时差信箱
+                </span>
+                <span className="text-[8px] text-[#A3928E] mt-0.5">
+                  {formatNow().split(' ')[0]}
+                </span>
+              </div>
+
+              <div className="flex items-center gap-2.5 mb-6">
+                <div className="w-9 h-9 rounded-2xl bg-gradient-to-br from-[#F48C7F] to-[#F7A072] flex items-center justify-center text-white">
+                  <Mail className="w-4 h-4" />
+                </div>
+                <div>
+                  <span className="text-[10px] tracking-[0.2em] text-[#D96B5D] uppercase block">
+                    TIME-LAG ARCHIVE
+                  </span>
+                  <h2 className="font-serif text-lg font-semibold text-[#4A3B38]">
+                    时差信箱 · 专属纪念回执
+                  </h2>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 p-3.5 rounded-2xl bg-white/80 border border-[#FDE2DC]/80 text-xs mb-6">
+                <div>
+                  <span className="text-[#A3928E] block text-[11px]">永久保存纸条数</span>
+                  <span className="font-semibold text-[#4A3B38] mt-0.5 block">
+                    {myNotes.length} 封
+                  </span>
+                </div>
+                <div>
+                  <span className="text-[#A3928E] block text-[11px]">封存时刻</span>
+                  <span className="font-medium text-[#4A3B38] mt-0.5 block">
+                    {formatNow()}
+                  </span>
+                </div>
+              </div>
+
+              {latestNote ? (
+                <div className="mb-6">
+                  <div className="flex items-center justify-between text-[11px] text-[#A3928E] mb-2">
+                    <span>最近寄出心声（致：{latestNote.recipient}）</span>
+                  </div>
+                  <div className="p-4 rounded-2xl bg-[#FDE2DC]/35 border border-[#FDE2DC] font-serif text-sm text-[#4A3B38] leading-relaxed">
+                    “{latestNote.content}”
+                  </div>
+                </div>
+              ) : (
+                <div className="mb-6 p-4 rounded-2xl bg-[#FDE2DC]/35 border border-[#FDE2DC] text-xs text-[#7A6864] leading-relaxed">
+                  您在时差信箱中留下了温暖的足迹，所有美好的心意均已永久存档。
+                </div>
+              )}
+
+              <div className="pt-5 border-t border-dashed border-[#F48C7F]/35">
+                <p className="font-serif text-sm sm:text-base text-[#4A3B38] leading-relaxed italic">
+                  {healingQuote}
+                </p>
+              </div>
+
+              <div className="mt-7 flex items-center justify-between text-[11px] text-[#A3928E]">
+                <span>状态：已完成封存回执</span>
+                <span className="font-serif text-[#D96B5D]">—— 时差信箱敬上</span>
+              </div>
+            </div>
+
+            <div className="mt-6">
+              <button
+                onClick={onReturnMain}
+                className="w-full py-3.5 px-6 rounded-2xl bg-white/85 hover:bg-white text-[#4A3B38] border border-[#FDE2DC] font-medium text-sm shadow-warm-sm hover:shadow-warm active:scale-[0.99] transition-all flex items-center justify-center gap-2"
+              >
+                <RotateCcw className="w-4 h-4 text-[#E07668]" />
+                <span>返回信箱主页（继续浏览或再次封存）</span>
+              </button>
+            </div>
+          </main>
+        </div>
+      );
+    }
+
+    // =========================================================================
+    // 7. 根组件 (App Root)
+    // =========================================================================
+
+    function App() {
+      const [view, setView] = useState('main'); // 'main' | 'receipt'
+      const [receiptNotes, setReceiptNotes] = useState([]);
+
+      return (
+        <>
+          {view === 'main' && (
+            <MainMailboxWorkspace
+              onGoSealedReceipt={(notes) => {
+                setReceiptNotes(notes);
+                setView('receipt');
+              }}
+            />
+          )}
+
+          {view === 'receipt' && (
+            <SealedReceiptView
+              myNotes={receiptNotes}
+              onReturnMain={() => setView('main')}
+            />
+          )}
+        </>
+      );
+    }
+
+    const root = createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
